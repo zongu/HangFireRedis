@@ -11,11 +11,11 @@ namespace HangFireRedis.Service
 
     public class JobScheduleService
     {
-        public string AddJobSchedule<T>(T job, TimeSpan timeSpan)
+        public string AddJobSchedule<T>(T job, DateTime triggerDatetime)
         {   
             var id = BackgroundJob.Schedule(
                     () => JobScheduleHandler.Trigger(job),
-                    timeSpan);
+                    triggerDatetime);
 
             using (var scope = Applibs.AutofacConfig.Container.BeginLifetimeScope())
             {
@@ -37,7 +37,10 @@ namespace HangFireRedis.Service
             return id;
         }
 
-        public string AddCycleJobSchedule<T>(T job, string cronExpression)
+        public bool RemoveJobSchedule(string jobScheduleId)
+            => BackgroundJob.Delete(jobScheduleId);
+
+        public string AddRecurJobSchedule<T>(T job, string cronExpression)
         {
             var id = Guid.NewGuid().ToString();
             RecurringJob.AddOrUpdate(
@@ -64,5 +67,8 @@ namespace HangFireRedis.Service
 
             return id;
         }
+
+        public void AddRecurJobSchedule(string jobScheduleId)
+            => RecurringJob.RemoveIfExists(jobScheduleId);
     }
 }

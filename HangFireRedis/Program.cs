@@ -21,7 +21,10 @@ namespace HangFireRedis
                 };
 
                 var svc = new JobScheduleService();
-                svc.AddCycleJobSchedule(message, Cron.MinuteInterval(1));
+                svc.AddRecurJobSchedule(message, Cron.MinuteInterval(1));
+
+                //svc.AddJobSchedule(message, DateTime.Now.AddSeconds(30));
+
                 Console.Read();
             }   
         }
